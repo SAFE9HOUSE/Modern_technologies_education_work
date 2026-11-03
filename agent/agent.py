@@ -12,12 +12,33 @@ client = OpenAI(
     http_client=httpx.Client(proxy=os.getenv("PROXY_URL"), verify=False) 
 )
 
-response = client.chat.completions.create(
-    model="nvidia/nemotron-3.5-lightning:free",
-    messages=[{"role": "user", "content": "Что такое токен?"}],
-)
+messages = [
+    {"role": "system", "content": "Ты полезный ассистент. Отвечай кратко."}
+]
 
-message = response.choices[0].message
-print("CONTENT:", message.content)
-print("FINISH_REASON:", response.choices[0].finish_reason)
-print("USAGE:", response.usage)
+print("Чат запущен. Введите 'exit' для выхода.\n")
+
+while True:
+    user_input = input("Вы: ")
+
+    if user_input.lower() == "exit":
+        print("Пока!")
+        break
+
+    messages.append({"role": "user", "content": user_input})
+
+    response = client.chat.completions.create(
+        model="nvidia/nemotron-3.5-lightning:free",  
+        messages=messages)
+
+    answer = response.choices[0].message.content
+    print(f"\nАссистент: {answer}\n")
+
+    # STEP №1
+    # print(f"{'-' * 70}\nFINISH_REASON: {response.choices[0].finish_reason}\n\nUSAGE: {response.usage}\n{'-' * 70}\n")
+
+    # STEP №2
+    # messages.append({"role": "assistant", "content": answer})
+
+
+
