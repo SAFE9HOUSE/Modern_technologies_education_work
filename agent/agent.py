@@ -31,6 +31,21 @@ def read_file(path: str) -> str:
     except Exception as e:
         return f"ОШИБКА: {e}"
 
+def write_file(path: str, content: str) -> str:
+    try:
+        full_path = (WORKSPACE / path).resolve()
+        if not str(full_path).startswith(str(WORKSPACE.resolve())):
+            return "ОШИБКА: выход за пределы песочницы"
+
+        answer = input(f"\n[ПОДТВЕРЖДЕНИЕ] Записать в '{path}'? [y/N]: ").strip().lower()
+        if answer != "y":
+            return "ОТКАЗ: пользователь не разрешил запись"
+
+        full_path.write_text(content, encoding="utf-8")
+        return f"OK: файл '{path}' записан ({len(content)} символов)"
+    except Exception as e:
+        return f"ОШИБКА: {e}"
+
 TOOLS = [
     {
         "type": "function",
@@ -54,6 +69,21 @@ TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "write_file",
+            "description": "Записывает текст в файл в рабочей папке. Требует подтверждения пользователя.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {"type": "string", "description": "Имя файла, например TODO.md"},
+                    "content": {"type": "string", "description": "Текст для записи"},
+                },
+                "required": ["path", "content"],
+            },
+        },
+    },
 ]
 
 def execute_tool(name: str, raw_args: str) -> str:
@@ -67,6 +97,8 @@ def execute_tool(name: str, raw_args: str) -> str:
             return list_files()
         elif name == "read_file":
             return read_file(args.get("path", ""))
+        elif name == "write_file":
+            return write_file(args.get("path", ""), args.get("content", ""))
         else:
             return f"ОШИБКА: неизвестный инструмент '{name}'"
     except Exception as e:
