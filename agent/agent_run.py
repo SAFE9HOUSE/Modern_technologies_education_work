@@ -7,7 +7,7 @@ client = OpenAI(
     base_url="http://localhost:11434/v1"
 )
 
-MODEL = "qwen3:8b"
+MODEL = "qwen3:4b"
 MAX_STEPS = 10
 
 def run_agent(messages: list) -> str:
