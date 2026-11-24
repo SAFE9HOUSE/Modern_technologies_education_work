@@ -22,6 +22,7 @@
 # Lab 2
 .env
 agent/workspace/
+agent/sessions/*.json
 __pycache__/
 *.pyc
 
