@@ -70,4 +70,29 @@ TOOLS = [
             },
         },
     },
+    {
+    "type": "function",
+    "function": {
+        "name": "search_docs",
+        "description": "Ищет информацию по документации проекта (README, фичи, FAQ, архитектура). "
+                       "Используй, когда нужно найти факт из docs, а не читать файл целиком.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Поисковый запрос на естественном языке, например 'приоритет задач по умолчанию'"
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Сколько фрагментов вернуть (1-5)",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "default": 3
+                    }
+                },
+            "required": ["query"]
+            }
+        }
+    }
 ]

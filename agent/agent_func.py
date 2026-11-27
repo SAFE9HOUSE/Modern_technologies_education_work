@@ -4,6 +4,9 @@ from pathlib import Path
 WORKSPACE = Path(__file__).parent / "workspace"
 WORKSPACE.mkdir(exist_ok=True)
 
+DOCS_DIR = Path(__file__).parent / "workspace" / "docs"
+
+
 def list_files() -> str:
     try:
         files = [f.name for f in WORKSPACE.iterdir() if f.is_file()]
@@ -21,6 +24,35 @@ def read_file(path: str) -> str:
         return full_path.read_text(encoding="utf-8")
     except Exception as e:
         return f"ОШИБКА: {e}"
+
+def search_docs(query: str, limit: int = 3) -> str:
+    """Ищет по документам проекта в workspace/docs/. Keyword-поиск."""
+    if not DOCS_DIR.exists():
+        return "ОШИБКА: папка workspace/docs/ не найдена"
+
+    words = [w.lower() for w in query.split() if len(w) > 1]
+    if not words:
+        return "ОШИБКА: пустой запрос"
+
+    results = []
+    for path in DOCS_DIR.glob("*.md"):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except Exception:
+            continue
+
+        for para in [p.strip() for p in text.split("\n\n") if p.strip()]:
+            para_lower = para.lower()
+            score = sum(para_lower.count(w) for w in words)
+            if score > 0:
+                results.append((score, path.name, para[:400]))
+
+    if not results:
+        return "ОШИБКА: ничего не найдено по запросу"
+
+    results.sort(key=lambda x: -x[0])
+    lines = [f"[{fname}] (score={s})\n{snip}\n" for s, fname, snip in results[:limit]]
+    return "\n---\n".join(lines)
 
 def write_file(path: str, content: str) -> str:
     try:
@@ -109,6 +141,8 @@ def execute_tool(name: str, raw_args: str) -> str:
                 int(args.get("reps", 0)),
                 int(args.get("sets", 0)),
             )
+        elif name == "search_docs":
+            return search_docs(**args)
         else:
             return f"ОШИБКА: неизвестный инструмент '{name}'"
     except Exception as e:
