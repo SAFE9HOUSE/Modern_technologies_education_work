@@ -22,7 +22,7 @@ client = OpenAI(
 
 MODEL = "nvidia/nemotron-3.5-lightning:free"
 MAX_STEPS = 50
-CONTEXT_BUDGET = 100000
+CONTEXT_BUDGET = 5000
 
 def ensure_context_budget(messages: list) -> list:
     if estimate_tokens(messages) <= CONTEXT_BUDGET:

@@ -26,7 +26,7 @@ def read_file(path: str) -> str:
         return f"ОШИБКА: {e}"
 
 def search_docs(query: str, limit: int = 3) -> str:
-    """Ищет по документам проекта в workspace/docs/. Keyword-поиск."""
+    """Keyword-поиск."""
     if not DOCS_DIR.exists():
         return "ОШИБКА: папка workspace/docs/ не найдена"
 
